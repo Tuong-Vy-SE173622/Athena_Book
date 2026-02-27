@@ -1,71 +1,101 @@
 import DataTable from "@/components/data-table";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
-import type { CategoryItem } from "./category-management.modal";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { CategoryItem } from "../../models/CategoryManagement";
 import { Button } from "@/components/ui/button";
 import FormDialog from "@/components/ui/form-dialog";
 import type { FormConfig } from "@/utils/types";
 import ConfirmDialog from "@/components/confirm-dialog";
+import { CategoryManagementServer } from "../../servers/CategoryManagement";
 
 function CategoryManagement() {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryItem | null>(
     null,
   );
-  const [formData, setFormData] = useState({ name: "" });
+  const [formData, setFormData] = useState({ categoryName: "" });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+  const server = useRef(new CategoryManagementServer()).current;
+
+  const fetchData = async () => {
+    try {
+      const res = await server.getCategoryList();
+      setCategories(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.categoryName.trim()) {
+      errors.categoryName = "Field name is required";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleCreate = () => {
     setSelectedCategory(null);
-    setFormData({ name: "" });
+    setFormData({ categoryName: "" });
     setFormErrors({});
     setIsCreateDialogOpen(true);
   };
 
   const handleEdit = (category: CategoryItem) => {
     setSelectedCategory(category);
-    setFormData({ name: category.categoryName });
+    setFormData({ categoryName: category.categoryName });
     setFormErrors({});
     setIsEditDialogOpen(true);
   };
+
   const handleDelete = (category: CategoryItem) => {
     setSelectedCategory(category);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleFormSubmit = () => {
-    console.log("Submited!");
+  const handleFormSubmit = async () => {
+    if (!validateForm()) return;
+    try {
+      if (selectedCategory) {
+        await server.updateCategory(selectedCategory._id, formData);
+        alert("Updated Successfully!");
+        setIsEditDialogOpen(false);
+      } else {
+        await server.createCategory(formData);
+        alert("Created Successfully!");
+        setIsCreateDialogOpen(false);
+      }
+      setSelectedCategory(null);
+      setFormData({ categoryName: "" });
+      setFormErrors({});
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleConfirmDelete = () => {
-    console.log("Deleted!");
+  const handleConfirmDelete = async () => {
+    if (!selectedCategory) return;
+    try {
+      await server.deleteCategory(selectedCategory._id);
+      alert("Deleted Successfully!");
+      setIsDeleteDialogOpen(false);
+      setSelectedCategory(null);
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+    }
   };
-
-  const categories = [
-    { id: "1", categoryName: "Novel" },
-    { id: "2", categoryName: "Romantic" },
-    { id: "3", categoryName: "Detective" },
-    { id: "4", categoryName: "Science Fiction" },
-    { id: "5", categoryName: "Fantasy" },
-    { id: "6", categoryName: "Horror" },
-    { id: "7", categoryName: "Thriller" },
-    { id: "8", categoryName: "Biography" },
-    { id: "9", categoryName: "History" },
-    { id: "10", categoryName: "Self Development" },
-    { id: "11", categoryName: "Psychology" },
-    { id: "12", categoryName: "Business" },
-    { id: "13", categoryName: "Marketing" },
-    { id: "14", categoryName: "Technology" },
-    { id: "15", categoryName: "Programming" },
-    { id: "16", categoryName: "Education" },
-    { id: "17", categoryName: "Health" },
-    { id: "18", categoryName: "Travel" },
-    { id: "19", categoryName: "Cooking" },
-    { id: "20", categoryName: "Art" },
-  ];
 
   const columns = useMemo<ColumnDef<CategoryItem>[]>(
     () => [
@@ -81,7 +111,6 @@ function CategoryManagement() {
         header: () => <div className="text-center w-full">Actions</div>,
         cell: ({ row }) => {
           const field = row.original;
-
           return (
             <div className="flex justify-center gap-2">
               <Button
@@ -116,13 +145,13 @@ function CategoryManagement() {
   };
 
   const formConfig: FormConfig = {
-    title: selectedCategory ? "Edit Field" : "Create Field",
+    title: selectedCategory ? "Edit Category" : "Create Category",
     description: selectedCategory
       ? "Update category information"
       : "Add a new category to the system",
     fields: [
       {
-        name: "name",
+        name: "categoryName",
         label: "Category Name",
         type: "text",
         required: true,
@@ -135,12 +164,12 @@ function CategoryManagement() {
     setIsCreateDialogOpen(false);
     setIsEditDialogOpen(false);
     setSelectedCategory(null);
-    setFormData({ name: "" });
+    setFormData({ categoryName: "" });
     setFormErrors({});
   };
 
   return (
-    <div className=" w-full px-8 py-4">
+    <div className="w-full px-8 py-4">
       <Button className="mb-4 cursor-pointer" onClick={handleCreate}>
         Add Category
       </Button>
@@ -148,11 +177,11 @@ function CategoryManagement() {
         data={categories}
         columns={columns}
         searchable
-        searchPlaceholder="Search fields..."
+        searchPlaceholder="Search categories..."
         searchFields={["categoryName"]}
         globalFilter={globalFilter}
         onGlobalFilterChange={setGlobalFilter}
-        emptyMessage="No fields found. Get started by adding your first field."
+        emptyMessage="No categories found. Get started by adding your first category."
         className="w-full"
       />
       <FormDialog
@@ -163,7 +192,6 @@ function CategoryManagement() {
         config={formConfig}
         data={formData}
         errors={formErrors}
-        // loading={isSubmitting}
         onSubmit={handleFormSubmit}
         onCancel={handleCloseDialog}
         onChange={handleFormChange}
@@ -173,12 +201,11 @@ function CategoryManagement() {
       <ConfirmDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title="Delete Field"
+        title="Delete Category"
         description={`Are you sure you want to delete "${selectedCategory?.categoryName}"? This action cannot be undone.`}
         confirmLabel="Delete"
         cancelLabel="Cancel"
         variant="destructive"
-        // loading={isSubmitting}
         onConfirm={handleConfirmDelete}
         onCancel={() => {
           setIsDeleteDialogOpen(false);

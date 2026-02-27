@@ -1,5 +1,5 @@
 import AdminLayout from "@/components/layout/admin-layout/admin-layout";
-import CategoryManagement from "@/features/admin/category-management/category-management";
+import CategoryManagement from "@/features/admin/components/category-management/CategoryManagement";
 import type { RouteObject } from "react-router-dom";
 
 export const routes: RouteObject[] = [
