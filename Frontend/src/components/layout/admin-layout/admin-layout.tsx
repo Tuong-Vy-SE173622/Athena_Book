@@ -77,7 +77,7 @@ const data = {
     },
     {
       title: "Author Management",
-      url: "#",
+      url: "/author",
       icon: IconUserEdit,
     },
     {

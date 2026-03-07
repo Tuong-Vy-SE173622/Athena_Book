@@ -118,6 +118,29 @@ export function FormDialog({
       case "email":
         return <Input {...baseInputProps} type="email" />;
 
+      case "file":
+        return (
+          <>
+            {field.previewUrl && (
+              <img
+                src={field.previewUrl}
+                alt="preview"
+                className="h-16 w-16 rounded-full object-cover mb-2"
+              />
+            )}
+            <Input
+              id={field.name}
+              type="file"
+              accept="image/*"
+              disabled={loading}
+              className={cn(FORM_STYLES.input, hasError && "border-red-500")}
+              onChange={(e) =>
+                onChange(field.name, e.target.files?.[0] ?? null)
+              }
+            />
+          </>
+        );
+
       default:
         return <Input {...baseInputProps} type="text" />;
     }

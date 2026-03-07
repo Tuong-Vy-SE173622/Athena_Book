@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import FormDialog from "@/components/ui/form-dialog";
 import type { FormConfig } from "@/utils/types";
 import ConfirmDialog from "@/components/confirm-dialog";
-import { CategoryManagementServer } from "../../servers/CategoryManagement";
+import { CategoryManagementServer } from "../../services/CategoryManagement";
 
 function CategoryManagement() {
   const [globalFilter, setGlobalFilter] = useState("");
@@ -104,6 +104,13 @@ function CategoryManagement() {
         header: "Category Name",
         cell: ({ row }) => (
           <div className="font-medium">{row.getValue("categoryName")}</div>
+        ),
+      },
+      {
+        accessorKey: "categorySlug",
+        header: "Category Slug",
+        cell: ({ row }) => (
+          <div className="font-medium">{row.getValue("categorySlug")}</div>
         ),
       },
       {

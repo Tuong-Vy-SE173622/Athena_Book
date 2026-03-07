@@ -162,12 +162,13 @@ export interface TableConfig<T = unknown> {
 export interface FormField {
   name: string;
   label: string;
-  type: "text" | "email" | "select" | "textarea" | "date" | "number";
+  type: "text" | "email" | "select" | "textarea" | "date" | "number" | "file";
   required?: boolean;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
   validation?: (value: unknown) => string | undefined;
   className?: string;
+  previewUrl?: string;
 }
 
 export interface FormConfig {
