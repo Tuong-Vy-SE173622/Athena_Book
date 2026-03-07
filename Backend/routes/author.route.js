@@ -40,11 +40,11 @@ route.get("/:id", async (req, res) => {
 
 route.put("/:id", upload.single("authorAvatar"), async (req, res) => {
   try {
-    console.log("req.body:", req.body);
-    console.log("req.file:", req.file);
     const data = { ...req.body };
     if (req.file) {
       data.authorAvatar = await uploadToCloudinary(req.file.buffer);
+    } else {
+      delete data.authorAvatar;
     }
     const author = await authorRepository.updateAuthor(req.params.id, data);
     if (!author) {
