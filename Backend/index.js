@@ -7,6 +7,7 @@ const port = 3000;
 
 const categoryRoute = require("./routes/category.route");
 const authorRoute = require("./routes/author.route");
+const publisherRoute = require("./routes/publisher.route");
 
 app.use(express.json());
 app.use(
@@ -18,6 +19,7 @@ app.use(
 
 app.use("/main/category", categoryRoute);
 app.use("/main/author", authorRoute);
+app.use("/main/publisher", publisherRoute);
 
 app.listen(port, () => {
   console.log(`App Listing on Port ${port}`);
