@@ -12,15 +12,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LibraryBig } from "lucide-react";
 import type { Icon } from "@tabler/icons-react";
+import athenLogoDark from "@/assets/athena-logo-dark.svg";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   data: {
     user: { name: string; email: string; avatar: string };
-    navMain: { title: string; url: string; icon: Icon }[]; // ← đổi
-    navSecondary: { title: string; url: string; icon: Icon }[]; // ← đổi
-    documents: { title: string; url: string; icon: Icon }[]; // ← đổi
+    navMain: { title: string; url: string; icon: Icon }[];
+    navSecondary: { title: string; url: string; icon: Icon }[];
+    documents: { title: string; url: string; icon: Icon }[];
   };
 }
 
@@ -32,13 +32,15 @@ export function AppSidebar({ data, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:!p-1.5 hover:!bg-transparent"
             >
               <a href="#">
-                <div className="bg-[#0066FF] p-2 rounded-lg">
-                  <LibraryBig className="!size-5" color="white" />
+                <div className=" p-2 rounded-lg">
+                  <img src={athenLogoDark} alt="logo" className="w-9" />
                 </div>
-                <span className="text-lg font-semibold ">Athena</span>
+                <span className="text-2xl font-bold ml-[-10px] text-[#0008A6]">
+                  Athena
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

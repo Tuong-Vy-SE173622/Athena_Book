@@ -6,9 +6,9 @@ import {
 } from "@/components/ui/sidebar";
 import { Outlet, useLocation } from "react-router-dom";
 import {
+  IconBuildings,
   IconChartBar,
   IconDashboard,
-  IconFileWord,
   IconFolder,
   IconHelp,
   IconLayoutDashboard,
@@ -81,9 +81,9 @@ const data = {
       icon: IconUserEdit,
     },
     {
-      title: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
+      title: "Publisher Management",
+      url: "/publisher",
+      icon: IconBuildings,
     },
   ],
 };
@@ -97,13 +97,13 @@ export default function AdminLayout() {
     <SidebarProvider>
       <AppSidebar data={data} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 bg-sky-50">
+          <div className="flex items-center gap-2 px-4 ">
             <SidebarTrigger className="-ml-1" />
             <h3 className=" text-xl font-bold ">{currentItem?.title}</h3>
           </div>
         </header>
-        <div className="flex p-4 pt-0">
+        <div className="flex p-4 pt-0 bg-sky-50 h-full">
           <Outlet />
         </div>
       </SidebarInset>
